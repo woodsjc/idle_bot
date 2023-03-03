@@ -28,8 +28,9 @@ fn click_loop() {
     let (orig_x, orig_y) = (vals[0].clone().unwrap(), vals[1].clone().unwrap());
 
     println!(
-        "{}: mouse location: (x:{orig_x}, y:{orig_y}), focused window pid:{window}",
-        chrono::Utc::now().format("%Y-%m-%d %H:%M:%S")
+        "{}: mouse location: (x:{orig_x}, y:{orig_y}), focused window pid:{}",
+        chrono::Utc::now().format("%Y-%m-%d %H:%M:%S"),
+        window.trim()
     );
 
     send(&EventType::MouseMove {
@@ -42,11 +43,14 @@ fn click_loop() {
 
     return_to_origin(orig_x, orig_y);
     xdotool::window::focus_window(&window, xdotool::OptionVec::new());
-    println!("Success!");
+    println!(
+        "{}: Success!",
+        chrono::Utc::now().format("%Y-%m-%d %H:%M:%S")
+    );
 }
 
 fn send(event_type: &EventType) {
-    let delay = time::Duration::from_millis(25);
+    let delay = time::Duration::from_millis(20);
     match simulate(event_type) {
         Ok(()) => (),
         Err(SimulateError) => {
