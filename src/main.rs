@@ -16,7 +16,9 @@ fn main() {
 
 fn click_loop() {
     let loc_text = mouse::get_mouse_location();
-    //"x:595 y:301 screen:0 window:23068675\n"
+    let window: &str = "";
+    let window = xdotool::window::get_window_focus(window);
+    let window = String::from_utf8(window.stdout).unwrap();
 
     let vals = String::from_utf8(loc_text.stdout)
         .unwrap()
@@ -26,7 +28,7 @@ fn click_loop() {
     let (orig_x, orig_y) = (vals[0].clone().unwrap(), vals[1].clone().unwrap());
 
     println!(
-        "{}: mouse location: (x:{orig_x}, y:{orig_y})",
+        "{}: mouse location: (x:{orig_x}, y:{orig_y}), focused window pid:{window}",
         chrono::Utc::now().format("%Y-%m-%d %H:%M:%S")
     );
 
@@ -39,6 +41,7 @@ fn click_loop() {
     }
 
     return_to_origin(orig_x, orig_y);
+    xdotool::window::focus_window(&window, xdotool::OptionVec::new());
     println!("Success!");
 }
 
@@ -54,13 +57,10 @@ fn send(event_type: &EventType) {
 }
 
 fn return_to_origin(x: i32, y: i32) {
-    //return to origin
     send(&EventType::MouseMove {
         x: x as f64,
         y: y as f64,
     });
-    send(&EventType::ButtonPress(Button::Left));
-    send(&EventType::ButtonRelease(Button::Left));
 }
 
 fn left_click() {
